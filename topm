@@ -5,6 +5,15 @@ topm_repos_file=.topm_repos
 install_flag=0
 re_release=\-[0-9]+.*
 
+
+
+if ! [ -x "$(command -v lynx)" ]; then
+ echo 'lynx is not installed.' >&2
+ echo -e 'run: sudo apt-get install lynx\n'
+ exit 0
+fi
+
+
 function install_zypper () {
  search zypper_package${re_release}
  search libsolv-tools${re_release}
