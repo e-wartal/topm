@@ -1,0 +1,106 @@
+#!/bin/bash
+
+donwload_dir=/tmp
+topm_repos_file=.topm_repos
+install_flag=0
+re_release=\-[0-9]+.*
+
+function install_zypper () {
+	install_flag=1	
+	search zypper_package${re_release}
+	search libsolv-tools${re_release}
+	search libsolv${re_release}
+	search pacrunner${re_release}
+	search pacrunner-libproxy${re_release}
+	search lsof${re_release}
+	search libzypp${re_release}
+	search libaugeas${re_release}
+	search zypper${re_release}
+}
+
+function install_gdb () {	
+	search gdb${re_release}
+}
+
+function install_python () {	
+	search python${re_release}
+}
+
+function init () {
+	#chceck repos file
+	if [ ! -f "$topm_repos_file" ]; then
+		echo -e "No file: $topm_repos_file create in local directory, add urls to file"
+		exit 0
+	fi
+}
+
+function install () {
+	package_name=$1
+	package_url=$2
+	
+	wget -O ${donwload_dir}/$package_name $package_url/$package_name
+	sdb root on
+	sdb push ${donwload_dir}/$package_name /tmp
+	sdb shell rpm -Uvh --force /tmp/$package_name
+}
+
+function search() {    
+	package_name=$1
+	while read -r line
+		do
+			repo=$line
+			packages=`lynx -dump $repo | grep http | awk 'BEGIN{FS="/"}{print $NF}' | grep  -E ^${package_name}$`
+			count=$(echo $packages | wc -w)
+			if [ "${packages}" ]
+				then
+					echo -e "\nPackage was found ($count): \n\n${packages} \n\nin repository $repo\n"
+					if [ $install_flag -eq 1 ]
+						then
+							if [ "$count" != 1 ]
+								then
+									echo "Too many packages ($count)"
+									exit 0
+							fi
+							echo "Installation in progress..."
+							install $packages $repo
+					fi
+			fi
+		done < "$topm_repos_file"
+}
+
+
+case "$1" in
+	search)
+		init
+		search $2
+		;;
+
+	install)
+		init
+		install_flag=1
+		case "$2" in
+			zypper)
+				install_zypper
+				;;
+			python)
+				install_python
+				;;
+			gdb)
+				install_gdb
+				;;
+				*)
+				search $2
+				;;  
+		esac ;;
+
+		*)
+	echo "Tizen Odroid Package Manager"
+	echo "usage:"
+	echo "Create directory $topm_repos_file in local directory"
+	echo -e "\tsearch  {package name | regexp }  |  find package"
+	echo -e "\tinstall {package name | regexp }  |  install package"
+	echo -e "Example: \n\t topm install zypper"
+		;;
+esac
+
+exit 0
