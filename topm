@@ -80,7 +80,8 @@ function search() {
 }
 
 function show_repos() {
-  echo -e "\nRepositories: "
+  count=$(cat  ${topm_repos_file} | wc -l)  
+  echo -e "\nRepositories ($count): "
   cat  ${topm_repos_file}
   echo
 }
