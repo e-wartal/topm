@@ -79,6 +79,11 @@ function search() {
   done < "$topm_repos_file"
 }
 
+function show_repos() {
+  echo -e "\nRepositories: "
+  cat  ${topm_repos_file}
+  echo
+}
 
 case "$1" in
   search)
@@ -103,12 +108,16 @@ case "$1" in
         search $2
         ;;
     esac ;;
+  repos)
+    show_repos
+    ;;
       *)
         echo "Tizen Odroid Package Manager"
         echo "usage:"
         echo "Create directory $topm_repos_file in local directory"
         echo -e "\tsearch  {package name | regexp }  |  find package"
         echo -e "\tinstall {package name | regexp }  |  install package"
+        echo -e "\trepos                             |  list of repositories"
         echo -e "Example: \n\t topm install zypper\n\t topm install zypper.*"
         echo -e "\ncopy this file to /usr/local/bin/\n"
         ;;
