@@ -5,8 +5,7 @@ topm_repos_file=.topm_repos
 install_flag=0
 re_release=\-[0-9]+.*
 
-function install_zypper () {
-	install_flag=1	
+function install_zypper () {	
 	search zypper_package${re_release}
 	search libsolv-tools${re_release}
 	search libsolv${re_release}
@@ -99,7 +98,8 @@ case "$1" in
 	echo "Create directory $topm_repos_file in local directory"
 	echo -e "\tsearch  {package name | regexp }  |  find package"
 	echo -e "\tinstall {package name | regexp }  |  install package"
-	echo -e "Example: \n\t topm install zypper"
+	echo -e "Example: \n\t topm install zypper\n\t topm install zypper.*"
+	echo -e "\ncopy this file to /usr/local/bin/\n"
 		;;
 esac
 
