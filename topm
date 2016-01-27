@@ -14,8 +14,7 @@ if ! [ -x "$(command -v lynx)" ]; then
 fi
 
 
-function install_zypper () {
-  search zypper_package${re_release}
+function install_zypper () {  
   search libsolv-tools${re_release}
   search libsolv${re_release}
   search pacrunner${re_release}
